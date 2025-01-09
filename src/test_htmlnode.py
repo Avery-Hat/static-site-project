@@ -1,5 +1,5 @@
 import unittest
-from htmlnode import HTMLNode, LeafNode
+from htmlnode import HTMLNode, LeafNode, ParentNode
 
 class TestHTMLNode(unittest.TestCase):
     def test_props_to_html(self):
@@ -75,12 +75,45 @@ class TestLeafNode(unittest.TestCase):
         # Test with no tag but non-empty value, which should render as raw text
         raw_text_leaf = LeafNode(None, "Raw text only")
         self.assertEqual(raw_text_leaf.to_html(), "Raw text only")
-        
+
     def test_none_props(self):
         # Test when props are None
         leaf = LeafNode("p", "Test with None props", None)
         self.assertEqual(leaf.to_html(), "<p>Test with None props</p>")
 
+class TestParentNode(unittest.TestCase):
+    def test_parentnode_with_one_child(self):
+        leaf = LeafNode("b", "Bold text")
+        parent = ParentNode("p", [leaf])
+        self.assertEqual(parent.to_html(), "<p><b>Bold text</b></p>", "Failed for one child node!")
+
+    def test_parentnode_with_multiple_children(self):
+        child1 = LeafNode("b", "Bold text")
+        child2 = LeafNode(None, "Normal text")
+        child3 = LeafNode("i", "Italic text")
+
+        parent = ParentNode("p", [child1, child2, child3])
+
+        expected_html = "<p><b>Bold text</b>Normal text<i>Italic text</i></p>"
+        self.assertEqual(parent.to_html(), expected_html, "Failed for multiple child nodes!")
+
+    def test_parentnode_missing_tag(self):
+        with self.assertRaises(ValueError) as context:
+            parent = ParentNode(None, [])
+            parent.to_html()
+        self.assertEqual(str(context.exception), "tag cannot be missing!", "Incorrect error for missing tag")
+
+    def test_parentnode_missing_children(self):
+        with self.assertRaises(ValueError) as context:
+            parent = ParentNode("div", None)
+            parent.to_html()
+        self.assertEqual(str(context.exception), "children cannot be missing!", "Incorrect error for missing children")
+
+    def test_parentnode_empty_children(self):
+        with self.assertRaises(ValueError) as context:
+            parent = ParentNode("p", [])
+            parent.to_html()
+        self.assertEqual(str(context.exception), "children list cannot be empty!", "Incorrect error for empty children list")
 
 if __name__ == "__main__":
     unittest.main()

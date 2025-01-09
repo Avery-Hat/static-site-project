@@ -34,3 +34,32 @@ class LeafNode(HTMLNode):
 
         props_string = self.props_to_html() #constructing HTML string
         return f"<{self.tag}{props_string}>{self.value}</{self.tag}>"
+
+class ParentNode(HTMLNode):
+    def __init__(self, tag, children, props=None):
+        super().__init__(tag=tag, children=children, props=props)
+    
+    def to_html(self):
+        if self.tag is None:
+            raise ValueError("tag cannot be missing!")
+        
+        if self.children is None:
+            raise ValueError("children cannot be missing!")
+        
+        if not self.children:
+            raise ValueError("children list cannot be empty!")
+        
+        for child in self.children:
+            if not hasattr(child, 'to_html'):
+                raise ValueError("All children must have a 'to_html' method!")
+
+        children_html = ""
+        for child in self.children:
+            # Call the child's to_html method
+            children_html += child.to_html()
+        
+        html = f"<{self.tag}>{children_html}</{self.tag}>"
+        return html
+    
+    def __repr__(self):
+        return f"ParentNode({self.tag}, children: {self.children}, {self.props})"
