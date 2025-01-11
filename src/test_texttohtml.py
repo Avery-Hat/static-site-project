@@ -55,3 +55,6 @@ class TestTextToHTML(unittest.TestCase):
         with self.assertRaises(Exception):
             result = text_node_to_html_node(node)
 
+
+if __name__ == "__main__":
+    unittest.main()
