@@ -54,3 +54,4 @@ class TestTextToHTML(unittest.TestCase):
         node = TextNode("bwana", "NOT_A_TYPE")
         with self.assertRaises(Exception):
             result = text_node_to_html_node(node)
+
