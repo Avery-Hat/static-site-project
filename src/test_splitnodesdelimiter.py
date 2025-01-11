@@ -1,5 +1,5 @@
 import unittest
-from src.textnode import TextNode, TextType
+from textnode import TextNode, TextType
 from split_nodes_delimiter import split_nodes_delimiter
 
 class TestSplitNode(unittest.TestCase):
@@ -36,26 +36,26 @@ class TestSplitNode(unittest.TestCase):
         new_nodes = split_nodes_delimiter(nodes, "`", TextType.CODE)
         
         # Assert the results
-        assert len(new_nodes) == 8
+        self.assertEqual(len(new_nodes), 11)
         
         # Check each node's text and type
-        assert new_nodes[0].text == "This is "
-        assert new_nodes[1].text == "code"
-        assert new_nodes[2].text == ""
-        assert new_nodes[3].text == "already bold"
-        assert new_nodes[4].text == "More "
-        assert new_nodes[5].text == "code"
-        assert new_nodes[6].text == " here"
-        assert new_nodes[7].text == "plain text"
-        assert new_nodes[8].text == ""
-        assert new_nodes[9].text == "final code"
-        assert new_nodes[10].text == ""
+        self.assertEqual(new_nodes[0].text, "This is ")
+        self.assertEqual(new_nodes[1].text, "code")
+        self.assertEqual(new_nodes[2].text, "")
+        self.assertEqual(new_nodes[3].text, "already bold")
+        self.assertEqual(new_nodes[4].text, "More ")
+        self.assertEqual(new_nodes[5].text, "code")
+        self.assertEqual(new_nodes[6].text, " here")
+        self.assertEqual(new_nodes[7].text, "plain text")
+        self.assertEqual(new_nodes[8].text, "")
+        self.assertEqual(new_nodes[9].text, "final code")
+        self.assertEqual(new_nodes[10].text, "")
 
         # Check types of converted nodes
-        assert new_nodes[1].text_type == TextType.CODE
-        assert new_nodes[3].text_type == TextType.BOLD  # unchanged
-        assert new_nodes[5].text_type == TextType.CODE
-        assert new_nodes[9].text_type == TextType.CODE
-
+        self.assertEqual(new_nodes[1].text_type, TextType.CODE)
+        self.assertEqual(new_nodes[3].text_type, TextType.BOLD)  # unchanged
+        self.assertEqual(new_nodes[5].text_type, TextType.CODE)
+        self.assertEqual(new_nodes[9].text_type, TextType.CODE)
+        
 if __name__ == "__main__":
     unittest.main()
