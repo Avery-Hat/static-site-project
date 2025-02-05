@@ -18,15 +18,18 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
                 else:
                         # Before text (as TextType.TEXT)
                     before_text = node.text[0:first_delimiter]
-                    new_nodes.append(TextNode(before_text, TextType.TEXT))
-                    
-                    # Between delimiters (as the passed in text_type)
+                    if before_text:  # Only append if not empty
+                        new_nodes.append(TextNode(before_text, TextType.TEXT))
+
+                    # Between delimiters
                     between_text = node.text[first_delimiter + len(delimiter):second_delimiter]
-                    new_nodes.append(TextNode(between_text, text_type))
-                    
-                    # After text (as TextType.TEXT)
+                    if between_text:  # Only append if not empty
+                        new_nodes.append(TextNode(between_text, text_type))
+
+                    # After text
                     after_text = node.text[second_delimiter + len(delimiter):]
-                    new_nodes.append(TextNode(after_text, TextType.TEXT))
+                    if after_text:  # Only append if not empty
+                        new_nodes.append(TextNode(after_text, TextType.TEXT))
 
     
     return new_nodes

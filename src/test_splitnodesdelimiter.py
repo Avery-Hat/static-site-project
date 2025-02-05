@@ -36,26 +36,40 @@ class TestSplitNode(unittest.TestCase):
         new_nodes = split_nodes_delimiter(nodes, "`", TextType.CODE)
         
         # Assert the results
-        self.assertEqual(len(new_nodes), 11)
+        self.assertEqual(len(new_nodes), 8)
         
         # Check each node's text and type
         self.assertEqual(new_nodes[0].text, "This is ")
         self.assertEqual(new_nodes[1].text, "code")
-        self.assertEqual(new_nodes[2].text, "")
-        self.assertEqual(new_nodes[3].text, "already bold")
-        self.assertEqual(new_nodes[4].text, "More ")
-        self.assertEqual(new_nodes[5].text, "code")
-        self.assertEqual(new_nodes[6].text, " here")
-        self.assertEqual(new_nodes[7].text, "plain text")
-        self.assertEqual(new_nodes[8].text, "")
-        self.assertEqual(new_nodes[9].text, "final code")
-        self.assertEqual(new_nodes[10].text, "")
+        self.assertEqual(new_nodes[2].text, "already bold")
+        self.assertEqual(new_nodes[3].text, "More ")
+        self.assertEqual(new_nodes[4].text, "code")
+        self.assertEqual(new_nodes[5].text, " here")
+        self.assertEqual(new_nodes[6].text, "plain text")
+        self.assertEqual(new_nodes[7].text, "final code")
 
         # Check types of converted nodes
         self.assertEqual(new_nodes[1].text_type, TextType.CODE)
-        self.assertEqual(new_nodes[3].text_type, TextType.BOLD)  # unchanged
-        self.assertEqual(new_nodes[5].text_type, TextType.CODE)
-        self.assertEqual(new_nodes[9].text_type, TextType.CODE)
-        
+        self.assertEqual(new_nodes[2].text_type, TextType.BOLD)  # unchanged
+        self.assertEqual(new_nodes[4].text_type, TextType.CODE)
+        self.assertEqual(new_nodes[7].text_type, TextType.CODE)
+
+class TestBoldBoys(unittest.TestCase):
+    def test_bold_no_surrounding_text(self):
+        node = TextNode("**bold**", TextType.TEXT)
+        nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
+        self.assertEqual(len(nodes), 1)
+        self.assertEqual(nodes[0].text, "bold")
+        self.assertEqual(nodes[0].text_type, TextType.BOLD)
+
+    def test_bold_empty_middle(self):
+        node = TextNode("Hello****World", TextType.TEXT)
+        nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
+        self.assertEqual(len(nodes), 2)
+        self.assertEqual(nodes[0].text, "Hello")
+        self.assertEqual(nodes[1].text, "World")
+        self.assertEqual(nodes[0].text_type, TextType.TEXT)
+        self.assertEqual(nodes[1].text_type, TextType.TEXT)
+
 if __name__ == "__main__":
     unittest.main()
