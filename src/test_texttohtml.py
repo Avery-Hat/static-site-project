@@ -33,7 +33,7 @@ class TestTextToHTML(unittest.TestCase):
         self.assertEqual(result.value,"print('deeznuts')")
 
     def test_image_tohtml(self):
-        node = TextNode("veriah_heart_glasses.png", TextType.IMAGE, "Veriah wearing heart glasses")
+        node = TextNode("Veriah wearing heart glasses", TextType.IMAGE, "veriah_heart_glasses.png")
         result = text_node_to_html_node(node)
         self.assertIsInstance(result, LeafNode)
         self.assertEqual(result.tag, "img")

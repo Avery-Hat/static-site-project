@@ -1,6 +1,8 @@
 import unittest
 
-from textnode import TextNode, TextType, split_nodes_image, split_nodes_link
+from textnode import TextNode, TextType
+from text_to_nodes import text_to_textnodes
+from split_image_and_link import split_nodes_image, split_nodes_link
 # variables for tests located in src
 # Add split_nodes_image to import
 
@@ -104,6 +106,80 @@ class TestSplitNodeLink(unittest.TestCase):
         self.assertEqual(nodes[1].text, "boot.dev")
         self.assertEqual(nodes[1].text_type, TextType.LINK)
         self.assertEqual(nodes[1].url, "https://boot.dev")
+
+class TestTextToTextNode(unittest.TestCase): #text for Chapter 3, part 6
+    def test_text_to_textnodes_complex(self):  # Added self parameter
+        text = "This is **bold** and *italic* with `code`, plus a ![image](https://image.jpg) and a [link](https://www.wowhead.com/classic/item=10050/mageweave-bag#taught-by-npc)"
+        nodes = text_to_textnodes(text)
+        
+        assert len(nodes) == 10
+        assert nodes[0].text == "This is "
+        assert nodes[0].text_type == TextType.TEXT
+        
+        assert nodes[1].text == "bold"
+        assert nodes[1].text_type == TextType.BOLD
+
+        assert nodes[2].text == " and "
+        assert nodes[2].text_type == TextType.TEXT
+
+        assert nodes[3].text == "italic"
+        assert nodes[3].text_type == TextType.ITALIC
+
+        assert nodes[4].text == " with "
+        assert nodes[4].text_type == TextType.TEXT
+
+        assert nodes[5].text == "code"
+        assert nodes[5].text_type == TextType.CODE
+
+        assert nodes[6].text == ", plus a "
+        assert nodes[6].text_type == TextType.TEXT
+
+        assert nodes[7].text == "image"
+        assert nodes[7].text_type == TextType.IMAGE
+        assert nodes[7].url == "https://image.jpg"  # or source_path depending on your implementation
+
+        assert nodes[8].text == " and a "
+        assert nodes[8].text_type == TextType.TEXT
+
+        assert nodes[9].text == "link"
+        assert nodes[9].text_type == TextType.LINK
+        assert nodes[9].url == "https://www.wowhead.com/classic/item=10050/mageweave-bag#taught-by-npc"
+
+    def test_text_to_textnodes_simple(self):
+        text = "This is some **bold** text"
+        nodes = text_to_textnodes(text)
+        assert len(nodes) == 3
+        assert nodes[0].text == "This is some "
+        assert nodes[0].text_type == TextType.TEXT
+        assert nodes[1].text == "bold"
+        assert nodes[1].text_type == TextType.BOLD
+        assert nodes[2].text == " text"
+        assert nodes[2].text_type == TextType.TEXT
+
+    def test_text_to_textnodes_image_with_text(self):
+        text = "This is a ![python logo](https://i.imgur.com/va6syGZ.jpeg) in the middle"
+        nodes = text_to_textnodes(text)
+        assert len(nodes) == 3
+        assert nodes[0].text == "This is a "
+        assert nodes[0].text_type == TextType.TEXT
+        assert nodes[1].text == "python logo"
+        assert nodes[1].text_type == TextType.IMAGE
+        assert nodes[1].url == "https://i.imgur.com/va6syGZ.jpeg"
+        assert nodes[2].text == " in the middle"
+        assert nodes[2].text_type == TextType.TEXT
+
+    def test_text_to_textnodes_multiple_images(self):
+        text = "![python logo](https://i.imgur.com/va6syGZ.jpeg) and ![python logo](https://i.imgur.com/va6syGZ.jpeg)"
+        nodes = text_to_textnodes(text)
+        assert len(nodes) == 3
+        assert nodes[0].text == "python logo"
+        assert nodes[0].text_type == TextType.IMAGE
+        assert nodes[0].url == "https://i.imgur.com/va6syGZ.jpeg"
+        assert nodes[1].text == " and "
+        assert nodes[1].text_type == TextType.TEXT
+        assert nodes[2].text == "python logo"
+        assert nodes[2].text_type == TextType.IMAGE
+        assert nodes[2].url == "https://i.imgur.com/va6syGZ.jpeg"
 
 if __name__ == "__main__":
     unittest.main()
