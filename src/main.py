@@ -1,16 +1,5 @@
 from textnode import TextNode, TextType
-import re
-
-def extract_markdown_images(text):
-    pattern = r"!\[([^\[\]]*)\]\(([^\(\)]*)\)"
-    matches = re.findall(pattern, text)
-    return matches
-
-def extract_markdown_links(text):
-    pattern = r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)"
-    matches = re.findall(pattern, text)
-    return matches
-
+from markdown_parser import *
 def main():
     node = TextNode("This is a text node", TextType.BOLD, "https://www.boot.dev")
     print(node)
