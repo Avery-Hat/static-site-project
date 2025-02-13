@@ -109,11 +109,11 @@ class TestParentNode(unittest.TestCase):
             parent.to_html()
         self.assertEqual(str(context.exception), "children cannot be missing!", "Incorrect error for missing children")
 
-    def test_parentnode_empty_children(self):
-        with self.assertRaises(ValueError) as context:
-            parent = ParentNode("p", [])
-            parent.to_html()
-        self.assertEqual(str(context.exception), "children list cannot be empty!", "Incorrect error for empty children list")
+    # def test_parentnode_empty_children(self):
+    #     with self.assertRaises(ValueError) as context:
+    #         parent = ParentNode("p", [])
+    #         parent.to_html()
+    #     self.assertEqual(str(context.exception), "children list cannot be empty!", "Incorrect error for empty children list")
 
 if __name__ == "__main__":
     unittest.main()

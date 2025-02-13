@@ -46,8 +46,7 @@ class ParentNode(HTMLNode):
         if self.children is None:
             raise ValueError("children cannot be missing!")
         
-        if not self.children:
-            raise ValueError("children list cannot be empty!")
+        children_html = ""
         
         for child in self.children:
             if not hasattr(child, 'to_html'):

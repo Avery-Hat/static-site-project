@@ -14,19 +14,54 @@ def extract_markdown_links(text):
 
 def markdown_to_blocks(markdown):
     blocks = markdown.split('\n\n')
-    cleaned_blocks = []
+    final_blocks = []
 
     for block in blocks:
-        cleaned_block = block.strip()
-        
-        if cleaned_block != "":
-            cleaned_blocks.append(cleaned_block)
-    return cleaned_blocks
+        lines = block.strip().split('\n')
+        current_block = []
+        current_type = None
+
+        for line in lines:
+            line_type = None
+            if line.startswith('> '):
+                line_type = 'quote'
+            elif line.startswith('#'):
+                line_type = 'heading'
+            elif line.startswith('* ') or line.startswith('- '):
+                line_type = 'list'
+            elif line.strip().startswith('```'):
+                line_type = 'code'
+            # Add more line type checks as needed
+
+            if current_type and line_type and current_type != line_type:
+                # If type changes, start a new block
+                if current_block:
+                    final_blocks.append('\n'.join(current_block))
+                current_block = [line]
+                current_type = line_type
+            else:
+                current_block.append(line)
+                if not current_type:
+                    current_type = line_type
+
+        if current_block:
+            final_blocks.append('\n'.join(current_block))
+
+    return [block for block in final_blocks if block.strip()]
 
 #chapter 4, part 2: checking blocks of md text and returning string representing
 # the types of block it is (paragraph,heading,code,quote,unordered_list,ordered_list)
 def block_to_block_type(block):
-    #heading
+    lines = block.split('\n')
+    
+    # Code blocks (check first since they use special markers)
+    if len(lines) >= 2:
+        first_line = lines[0].strip()
+        last_line = lines[-1].strip()
+        if first_line == '```' and last_line == '```':
+            return 'code'
+    
+    # Heading (check early since it's a single-line pattern)
     if block.startswith('#'):
         hash_count = 0
         for char in block:
@@ -36,18 +71,24 @@ def block_to_block_type(block):
                 break
         if hash_count <= 6 and len(block) > hash_count and block[hash_count] == ' ':
             return 'heading'
+    
+    # Block quotes
+    all_quotes = True
+    for line in lines:
+        if not (line.startswith("> ") or line.startswith(">")):
+            all_quotes = False
+    if all_quotes:
+        return 'quote'
         
-    #unordered_lists
-    lines = block.split('\n') #reusing variable for ordered_lists
+    # Unordered lists
     all_unordered = True
-    #checking each line
     for line in lines:
         if not (line.startswith('* ') or line.startswith('- ')):
             all_unordered = False
     if all_unordered:
         return 'unordered_list'
     
-    #ordered_lists
+    # Ordered lists
     all_ordered = True
     for i, line in enumerate(lines, start=1):
         if not line.startswith(f"{i}. "):
@@ -55,19 +96,5 @@ def block_to_block_type(block):
     if all_ordered:
         return 'ordered_list'
     
-    #code
-    if len(lines) >= 2:  # make sure we have at least 2 lines
-        first_line = lines[0].strip()
-        last_line = lines[-1].strip()
-        if first_line == ('```') and last_line == '```':
-            return 'code'
-
-    #block_quotes
-    all_quotes = True
-    for line in lines:
-        if not (line.startswith("> ") or line.startswith(">")):
-            all_quotes = False
-    if all_quotes:
-        return 'quote'
-    
+    # Paragraph (default case)
     return 'paragraph'
