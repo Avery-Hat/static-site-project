@@ -25,14 +25,16 @@ def copy_static_directory(src, dst):
 
 
 def main():
-    #copying directory
+    # copying directory first
     copy_static_directory("static", "public")
+    
     #generate main page, index.html
-    generate_page(
-        from_path="content/index.md",  # Path to the markdown file
-        template_path="template.html",  # Path to the HTML template
-        dest_path="public/index.html"  # Destination path for the generated page
-    )
+    generate_pages_recursive(
+    dir_path_content="content",  # Process all markdown files in the content directory
+    template_path="template.html",  # Path to the HTML template
+    dest_dir_path="public"  # Output all processed files into the public directory
+)
+
 
 def generate_page(from_path, template_path, dest_path):
     # Print status
@@ -60,6 +62,20 @@ def generate_page(from_path, template_path, dest_path):
     # Write the final HTML to the destination file
     with open(dest_path, "w") as f:
         f.write(full_html)
+
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+    os.makedirs(dest_dir_path, exist_ok=True)
+    entries = os.listdir(dir_path_content)
+    for entry in entries:
+        source_path = os.path.join(dir_path_content, entry)
+        dest_path = os.path.join(dest_dir_path, entry)
+        
+        if os.path.isfile(source_path):
+            if source_path.endswith(".md"):
+                dest_path = dest_path[:-3] + ".html"
+                generate_page(source_path, template_path, dest_path)
+        elif os.path.isdir(source_path):  # Ensure we're dealing with a directory
+            generate_pages_recursive(source_path, template_path, dest_path)
 
 if __name__ == "__main__":
     main()
